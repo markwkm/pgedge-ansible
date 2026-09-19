@@ -47,6 +47,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   output_plugin_libraries does not name. Both simple and Ultra-HA clusters now
   set the parameter, and only on releases that recognize it, since earlier
   releases refuse to start when it appears. (EE-34)
+
+- setup_postgres role documentation no longer attributes pg_hba.conf
+  management to the blockinfile module, which only handles
+  postgresql.conf, and now gives pg_hba.conf's path as pg_config_dir
+  rather than pg_data, which named the wrong directory on Debian.
+  (EE-40)
+- setup_postgres no longer rewrites pg_hba.conf down to a single rule on
+  every run after the first. One of several tasks writing that file used
+  overwrite: true, which compares its own rules against the entire file
+  rather than just the rules that task manages, so every run wiped
+  whatever the other tasks (and custom_hba_rules) had already added, then
+  immediately recreated it. All the rules now go through one task using
+  the module's own per-rule mode instead, matching how setup_postgres's own
+  primary_setup.yaml and setup_backrest already write to the same file.
+  (EE-40)
 - patroni_config_file and patroni_tls_dir now recognized by all roles.
 - HA failover example in the usage guide now passes the Patroni scope the
   collection actually configures, which has included the Postgres version
