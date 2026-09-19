@@ -117,6 +117,7 @@ variables. The following table lists the most commonly used parameters:
 | db_user | admin | Database superuser username. |
 | db_password | secret | Password for db_user. |
 | is_ha_cluster | false | When true, installs etcd, Patroni, and HAProxy. |
+| coldfront_enabled | false | When true, adds the ColdFront tiered-storage add-on to a pgEdge node. |
 
 For the complete parameter list, see the
 [Configuration Reference](docs/configuration.md).

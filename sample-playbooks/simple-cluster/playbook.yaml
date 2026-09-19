@@ -16,3 +16,7 @@
   - install_pgedge
   - setup_postgres
   - setup_pgedge
+  - role: install_coldfront
+    when: coldfront_enabled
+  - role: setup_coldfront
+    when: coldfront_enabled

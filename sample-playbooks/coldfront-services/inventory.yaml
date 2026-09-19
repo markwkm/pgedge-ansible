@@ -1,0 +1,12 @@
+# This inventory will produce a single Lakekeeper host: the Iceberg
+# REST catalog a ColdFront-enabled pgEdge cluster commits through.
+#
+# lakekeeper_host, coldfront_s3_endpoint and the other coldfront_s3_*
+# settings are read from role_config's defaults unless overridden here
+# or on the pgEdge cluster's own inventory; both need to agree on them.
+
+lakekeeper:
+  vars:
+    lakekeeper_host: 192.168.6.20
+  hosts:
+    192.168.6.20:

@@ -1,0 +1,22 @@
+# This playbook will build the auxiliary services a ColdFront-enabled
+# pgEdge cluster needs: Lakekeeper, the Iceberg REST catalog every cold
+# tier commit goes through. Run it against a cluster that also sets
+# coldfront_enabled: true (see sample-playbooks/simple-cluster) so the
+# lakekeeper_* and coldfront_s3_* settings line up on both sides.
+#
+# This collection does not deploy an object store. Point
+# coldfront_s3_endpoint at whatever S3-compatible store you already
+# have.
+#
+# CHECK the README for how these roles work
+---
+
+- hosts: lakekeeper
+
+  collections:
+  - pgedge.platform
+
+  roles:
+  - install_repos
+  - install_lakekeeper
+  - setup_lakekeeper

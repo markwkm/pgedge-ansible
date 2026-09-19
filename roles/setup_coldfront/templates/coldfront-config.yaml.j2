@@ -1,0 +1,28 @@
+# Managed by Ansible. Read by the archiver, partitioner and compactor
+# from /etc/pgedge/coldfront/config.yaml.
+---
+
+postgres:
+  dsn: "host=/var/run/postgresql port={{ pg_port }} dbname={{
+    coldfront_db }} user={{ db_user }} password={{ db_password
+    }} sslmode=disable"
+
+iceberg:
+  warehouse: "{{ lakekeeper_warehouse }}"
+  lakekeeper_endpoint: "http://{{ lakekeeper_host }}:{{ lakekeeper_port
+    }}/catalog"
+
+s3:
+  endpoint: "{{ coldfront_s3_hostport }}"
+  region: "{{ coldfront_s3_region }}"
+  access_key: "{{ coldfront_s3_access_key }}"
+  secret_key: "{{ coldfront_s3_secret_key }}"
+  use_ssl: {{ coldfront_s3_endpoint.startswith('https') | lower }}
+  url_style: "{{ 'path' if coldfront_s3_path_style else 'virtual' }}"
+
+# Tiered tables live in coldfront.partition_config, not here. Register
+# one with "archiver register", or list them under archiver.tables and
+# load them with "archiver import --config
+# /etc/pgedge/coldfront/config.yaml".
+archiver:
+  tables: []

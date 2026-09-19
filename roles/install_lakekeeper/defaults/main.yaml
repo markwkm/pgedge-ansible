@@ -1,0 +1,18 @@
+---
+
+lakekeeper_bind_ip: "{{ lakekeeper_host }}"
+
+# Lakekeeper also serves Prometheus metrics on a second port, and it
+# exits at startup if that port is taken.
+lakekeeper_metrics_port: 9000
+
+# Catalog state. This Postgres instance exists for Lakekeeper alone.
+lakekeeper_db: lakekeeper
+lakekeeper_db_user: lakekeeper
+lakekeeper_db_password: secret
+
+# Iceberg namespace pre-created in the warehouse. Decoupled (Iceberg-only)
+# tables need it to exist in its own committed REST call, because
+# coldfront.create_iceberg_table() defers the Iceberg CREATE SCHEMA to
+# commit but POSTs the CREATE TABLE eagerly.
+lakekeeper_namespace: public
