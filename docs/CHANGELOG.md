@@ -62,6 +62,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   the module's own per-rule mode instead, matching how setup_postgres's own
   primary_setup.yaml and setup_backrest already write to the same file.
   (EE-40)
+- setup_pgedge no longer reports Spock node and subscription creation as
+  changed on every run. Both used a DO $$ ... $$ block, which always
+  reports changed regardless of whether its IF NOT FOUND branch actually
+  fired, since Postgres's own command tag for an anonymous block carries
+  no row count. Both the HA and non-HA task files now check for existence
+  with a plain SELECT first and only run the creation query when needed.
+  (EE-40)
 - patroni_config_file and patroni_tls_dir now recognized by all roles.
 - HA failover example in the usage guide now passes the Patroni scope the
   collection actually configures, which has included the Postgres version
