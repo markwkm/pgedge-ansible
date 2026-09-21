@@ -59,6 +59,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   pgedge_preload_libraries list rather than a literal string, so
   setup_coldfront can extend it without overwriting Spock and Snowflake.
   (EE-40)
+- new ColdFront end-to-end test builds two pgEdge nodes, a Lakekeeper
+  host and a SeaweedFS object store, then checks that the catalog
+  serves its warehouse, that the extensions are loaded beside Spock and
+  Snowflake, and that a decoupled Iceberg table accepts a write and
+  returns it. (EE-40)
 
 ### Fixed
 

@@ -34,7 +34,13 @@ fi
 
 COMPOSE_FILE="$SCRIPT_DIR/compose/${SCENARIO}-${OS}.yml"
 INVENTORY="$SCRIPT_DIR/inventories/${SCENARIO}.yml"
+# Scenarios normally exercise the sample playbook a user would run.
+# One with no sample of its own falls back to its test playbook.
 PLAYBOOK="$PROJECT_DIR/sample-playbooks/${SCENARIO}/playbook.yaml"
+if [ ! -f "$PLAYBOOK" ]; then
+  PLAYBOOK="$SCRIPT_DIR/playbooks/${SCENARIO}.yml"
+fi
+
 VERIFY_PLAYBOOK="$SCRIPT_DIR/verify/verify-${SCENARIO}.yml"
 PROJECT_NAME="pgedge-test-${SCENARIO}-${OS}"
 
@@ -73,6 +79,14 @@ if [ "$DCS" != "etcd3" ]; then
   COMPOSE_ARGS+=(-f "$DCS_COMPOSE")
   EXTRA_VARS+=(-e "@$DCS_VARS")
   PROJECT_NAME="${PROJECT_NAME}-${DCS}"
+fi
+
+# Settings a scenario needs that cannot live in its inventory, because
+# the SSH wait below treats every address in that file as a host to
+# reach. The ColdFront scenario's object store is one such address.
+SCENARIO_VARS="$SCRIPT_DIR/vars/${SCENARIO}.yml"
+if [ -f "$SCENARIO_VARS" ]; then
+  EXTRA_VARS+=(-e "@$SCENARIO_VARS")
 fi
 
 cleanup() {
