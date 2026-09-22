@@ -40,6 +40,33 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   and setup_patroni include it so configuration can be gated on parameters that
   only some releases carry. (EE-34)
 
+- new install_lakekeeper and setup_lakekeeper roles build Lakekeeper, the
+  Iceberg REST catalog ColdFront's cold tier commits through, on its own
+  dedicated host with its own standalone Postgres instance. (EE-40)
+- new install_coldfront and setup_coldfront roles add the ColdFront
+  tiered-storage extension to an existing pgEdge Distributed Postgres node.
+  Recent data stays in native Postgres partitions; older data archives to
+  Iceberg on S3-compatible storage. (EE-40)
+- new simple-cluster-coldfront sample playbook sets up a pgEdge
+  Distributed Postgres cluster with ColdFront, and the Lakekeeper host its
+  cold tier commits through, in a single run. (EE-40)
+- new coldfront_s3_* parameters locate and authenticate to the S3-compatible
+  object store behind the cold tier. The setting is deliberately generic:
+  real AWS S3, MinIO, and a self-hosted store are all equally valid
+  backends. (EE-40)
+- role_config gained an ensure_postgres_cluster task file for roles that
+  need a standalone Postgres instance rather than a pgEdge Distributed
+  Postgres node, used by setup_lakekeeper. (EE-40)
+- setup_postgres now templates shared_preload_libraries from a new
+  pgedge_preload_libraries list rather than a literal string, so
+  setup_coldfront can extend it without overwriting Spock and Snowflake.
+  (EE-40)
+- new ColdFront end-to-end test builds two pgEdge nodes, a Lakekeeper
+  host and a SeaweedFS object store, then checks that the catalog
+  serves its warehouse, that the extensions are loaded beside Spock and
+  Snowflake, and that a decoupled Iceberg table accepts a write and
+  returns it. (EE-40)
+
 ### Fixed
 
 - Spock replication no longer breaks on Postgres releases carrying the fix for
@@ -76,6 +103,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   no row count. Both the HA and non-HA task files now check for existence
   with a plain SELECT first and only run the creation query when needed.
   (EE-40)
+- install_repos now refreshes the APT cache before installing its
+  prerequisite packages, so a play that includes it without init_server
+  no longer fails on a freshly provisioned Debian host with "No package
+  matching 'curl' is available". (EE-40)
 - patroni_config_file and patroni_tls_dir now recognized by all roles.
 - HA failover example in the usage guide now passes the Patroni scope the
   collection actually configures, which has included the Postgres version

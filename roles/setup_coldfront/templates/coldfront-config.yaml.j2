@@ -1,0 +1,33 @@
+# Managed by Ansible. Read by the archiver, partitioner and compactor
+# from /etc/pgedge/coldfront/config.yaml.
+#
+# The tools run as the coldfront OS user, the only one that can read
+# this file, so the DSN goes over TCP, where pg_hba.conf checks the
+# password. Over the Unix socket peer authentication would refuse
+# db_user.
+---
+
+postgres:
+  dsn: "host=127.0.0.1 port={{ pg_port }} dbname={{
+    coldfront_db }} user={{ db_user }} password={{ db_password
+    }} sslmode=disable"
+
+iceberg:
+  warehouse: "{{ lakekeeper_warehouse }}"
+  lakekeeper_endpoint: "http://{{ lakekeeper_host }}:{{ lakekeeper_port
+    }}/catalog"
+
+s3:
+  endpoint: "{{ coldfront_s3_hostport }}"
+  region: "{{ coldfront_s3_region }}"
+  access_key: "{{ coldfront_s3_access_key }}"
+  secret_key: "{{ coldfront_s3_secret_key }}"
+  use_ssl: {{ coldfront_s3_endpoint.startswith('https') | lower }}
+  url_style: "{{ coldfront_s3_url_style }}"
+
+# Tiered tables live in coldfront.partition_config, not here. Register
+# one with "archiver register", or list them under archiver.tables and
+# load them with "archiver import --config
+# /etc/pgedge/coldfront/config.yaml".
+archiver:
+  tables: []

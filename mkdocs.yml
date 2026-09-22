@@ -70,6 +70,7 @@ nav:
       - Backup Configuration: configuration/backup.md
       - DCS Configuration: configuration/dcs.md
       - etcd Configuration: configuration/etcd.md
+      - ColdFront Configuration: configuration/coldfront.md
   - Role Reference:
       - Role Overview: roles.md
       - role_config: roles/role_config.md
@@ -85,6 +86,10 @@ nav:
       - setup_haproxy: roles/setup_haproxy.md
       - setup_pgedge: roles/setup_pgedge.md
       - setup_backrest: roles/setup_backrest.md
+      - install_lakekeeper: roles/install_lakekeeper.md
+      - setup_lakekeeper: roles/setup_lakekeeper.md
+      - install_coldfront: roles/install_coldfront.md
+      - setup_coldfront: roles/setup_coldfront.md
   - Troubleshooting:
       - Troubleshooting: troubleshooting.md
       - Installation Issues: troubleshooting/installation.md

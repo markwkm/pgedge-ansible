@@ -6,7 +6,7 @@ PROJECT_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
 
 usage() {
   echo "Usage: $0 <scenario> <os> [dcs] [--keep]"
-  echo "  scenario: simple-cluster | ultra-ha"
+  echo "  scenario: simple-cluster | ultra-ha | simple-cluster-coldfront"
   echo "  os:       debian12 | rocky9"
   echo "  dcs:      etcd3 (default) | consul"
   echo "  --keep:   don't tear down containers after test"
@@ -73,6 +73,14 @@ if [ "$DCS" != "etcd3" ]; then
   COMPOSE_ARGS+=(-f "$DCS_COMPOSE")
   EXTRA_VARS+=(-e "@$DCS_VARS")
   PROJECT_NAME="${PROJECT_NAME}-${DCS}"
+fi
+
+# Settings a scenario needs that cannot live in its inventory, because
+# the SSH wait below treats every address in that file as a host to
+# reach. The ColdFront scenario's object store is one such address.
+SCENARIO_VARS="$SCRIPT_DIR/vars/${SCENARIO}.yml"
+if [ -f "$SCENARIO_VARS" ]; then
+  EXTRA_VARS+=(-e "@$SCENARIO_VARS")
 fi
 
 cleanup() {
@@ -143,6 +151,30 @@ if [ "$DCS" = "consul" ]; then
     sleep 2
   done
   echo "    Consul leader elected"
+fi
+
+# Step 4c: Wait for the scenario's object store bucket
+# The compose stack creates the bucket from a side container, which can
+# still be running once every host answers SSH. setup_lakekeeper writes
+# to the bucket to prove the warehouse credentials work, and fails
+# rather than waits if the bucket is not there yet.
+FILER=""
+if [ -f "$SCENARIO_VARS" ]; then
+  FILER=$(sed -n 's/^seaweedfs_filer: *//p' "$SCENARIO_VARS")
+fi
+if [ -n "$FILER" ]; then
+  BUCKET=$(sed -n 's/^coldfront_s3_bucket: *//p' "$SCENARIO_VARS")
+  echo "==> Step 4c: Waiting for the $BUCKET bucket..."
+  ELAPSED=0
+  until curl -sf -o /dev/null "$FILER/buckets/$BUCKET/"; do
+    ELAPSED=$((ELAPSED + 2))
+    if [ $ELAPSED -ge 60 ]; then
+      echo "ERROR: Bucket $BUCKET did not appear within 60s"
+      exit 1
+    fi
+    sleep 2
+  done
+  echo "    Bucket $BUCKET ready"
 fi
 
 # Step 5: Build and install Ansible collection

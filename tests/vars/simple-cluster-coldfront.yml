@@ -1,0 +1,27 @@
+---
+
+# Points the ColdFront roles at the Lakekeeper host and the SeaweedFS
+# container from tests/compose/simple-cluster-coldfront-*.yml. Pass
+# with: ansible-playbook -e @tests/vars/simple-cluster-coldfront.yml
+#
+# These live here rather than in the scenario's inventory because
+# run-test.sh greps the inventory for addresses and waits for SSH on
+# each one. SeaweedFS runs no sshd, so an address for it in the
+# inventory would stall the run until the wait timed out.
+
+lakekeeper_host: 192.168.6.30
+
+# Path-style addressing, because virtual-hosted style would need a
+# wildcard DNS entry per bucket that the test network has no way to
+# serve. Real S3 wants the opposite, which is why the parameter exists.
+coldfront_s3_endpoint: http://192.168.6.31:8333
+coldfront_s3_region: us-east-1
+coldfront_s3_bucket: iceberg
+coldfront_s3_access_key: coldfront
+coldfront_s3_secret_key: coldfrontsecret
+coldfront_s3_path_style: true
+
+# SeaweedFS's filer answers on 8888 without requiring a signed
+# request, which is how run-test.sh and the scenario's test playbook
+# wait for the bucket the compose stack creates in a side container.
+seaweedfs_filer: http://192.168.6.31:8888

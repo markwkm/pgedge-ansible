@@ -1,0 +1,20 @@
+---
+
+# ColdFront's own least-privilege NOLOGIN role that pg_duckdb gates
+# DuckDB execution on (duckdb.postgres_role). Members reach the cold
+# tier without superuser via coldfront.grant_app_access(); superusers
+# always qualify regardless.
+coldfront_duckdb_role: coldfront_duckdb
+
+# The additional database ColdFront's tiered storage lives in, separate
+# from whatever general-purpose databases the cluster already lists in
+# db_names.
+coldfront_db: coldfront
+
+# Upstream's own distinction: "vanilla" (false, the default here) is a
+# single node with a local advisory-lock bakery; "mesh" is N nodes
+# under Spock, coordinating cold-tier commits with the
+# Ricart-Agrawala protocol instead. Getting the vanilla configuration
+# solid comes first; setting this to true, and everything a real
+# multi-zone Spock mesh needs beyond it, is follow-up work.
+coldfront_mesh: false
