@@ -87,6 +87,7 @@ services:
       - -c
       - >-
         until echo 's3.bucket.create -name iceberg'
-        | weed shell -master=192.168.6.31:9333; do sleep 2; done
+        | weed shell -master=192.168.6.31:9333 -filer=192.168.6.31:8888;
+        do sleep 2; done
     networks:
       pgedge-test: {}
