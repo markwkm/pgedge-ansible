@@ -97,6 +97,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - setup_lakekeeper's warehouse-creation task now reports changed when it
   actually creates a warehouse, rather than always reporting unchanged.
   (EE-40)
+- install_repos now refreshes the APT cache before installing its
+  prerequisite packages, so a play that includes it without init_server
+  no longer fails on a freshly provisioned Debian host with "No package
+  matching 'curl' is available". (EE-40)
 - patroni_config_file and patroni_tls_dir now recognized by all roles.
 - HA failover example in the usage guide now passes the Patroni scope the
   collection actually configures, which has included the Postgres version
