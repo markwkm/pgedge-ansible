@@ -48,6 +48,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   set the parameter, and only on releases that recognize it, since earlier
   releases refuse to start when it appears. (EE-34)
 
+- setup_postgres now restarts Postgres when it changes the managed block in
+  postgresql.conf, rather than only making sure the service is running. An
+  instance that was already running kept its old settings, so with
+  cluster_name set to main on Debian, whose server package starts that
+  cluster as it installs, Spock failed to install with "spock is not in
+  shared_preload_libraries". HA clusters, where Patroni runs Postgres, are
+  unchanged. (EE-40)
 - setup_postgres role documentation no longer attributes pg_hba.conf
   management to the blockinfile module, which only handles
   postgresql.conf, and now gives pg_hba.conf's path as pg_config_dir
